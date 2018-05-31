@@ -1,0 +1,7 @@
+FROM quay.io/pypa/manylinux1_i686:latest
+
+COPY build_scripts/build_tools.sh /
+RUN /build_tools.sh && rm -r /build_tools.sh
+ENV PATH /usr/local/cmake-2.8.12/bin:${PATH}
+
+CMD ["/bin/bash"]
