@@ -55,3 +55,7 @@ for PYBIN in /opt/python/*/bin; do
         sed -i 's/-lpython${VERSION}${ABIFLAGS}//' $(readlink -e ${PYBIN}/python-config)
     fi
 done
+
+# Gaia's waf build script requires qt4 tools (qmake, uic, ...),
+# but they aren't really used. We should get rid of them in the future.
+yum -y install qt4-devel
