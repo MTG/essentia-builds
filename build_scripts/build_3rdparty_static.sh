@@ -5,10 +5,7 @@ curl -SLO https://github.com/MTG/essentia/archive/$ESSENTIA_3RDPARTY_VERSION.zip
 unzip $ESSENTIA_3RDPARTY_VERSION.zip
 cd essentia-*/
 
-# Force --static flag to pickup private libraries for Qt
-alias pkg-config='pkg-config --static'
-
-# Install dependencies to /usr/local
+# Install dependencies to /usr/local; force --static flag to pickup private libraries for Qt
 PKGCONFIG="/usr/bin/pkg-config --static" ./packaging/build_3rdparty_static_debian.sh --with-gaia
 
 cd ..
