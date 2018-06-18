@@ -9,7 +9,7 @@ ENV PATH /opt/python/cp27-cp27mu/bin/:${PATH}
 
 ENV PREFIX /usr/local
 ENV PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig
-ENV ESSENTIA_3RDPARTY_VERSION v2.1_beta4-341-g1823654
+ENV ESSENTIA_3RDPARTY_VERSION v2.1_beta4-347-g15f2c38
 
 RUN /build_3rdparty_static.sh && rm -r /build_3rdparty_static.sh
 
