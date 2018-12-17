@@ -1,7 +1,7 @@
 set -e -x
 
 YASM_VERSION=yasm-1.3.0 
-CMAKE_VERSION=cmake-2.8.12
+# CMAKE_VERSION=cmake-2.8.12
 
 # yasm on CentOS 5 is too old, install a newer version
 curl -SLO http://www.tortall.net/projects/yasm/releases/$YASM_VERSION.tar.gz
@@ -15,15 +15,15 @@ rm -r $YASM_VERSION $YASM_VERSION.tar.gz
 
 # cmake is also too old
 # taglib requires CMake 2.8.0, chromaprint requires CMake 2.8.12
-curl -SLO http://www.cmake.org/files/v2.8/$CMAKE_VERSION.tar.gz
-tar -xvf $CMAKE_VERSION.tar.gz
-cd $CMAKE_VERSION
-./configure --prefix=/usr/local/$CMAKE_VERSION
-make
-make install
-PATH=/usr/local/$CMAKE_VERSION/bin:$PATH
-cd ..
-rm -r $CMAKE_VERSION $CMAKE_VERSION.tar.gz
+# curl -SLO http://www.cmake.org/files/v2.8/$CMAKE_VERSION.tar.gz
+# tar -xvf $CMAKE_VERSION.tar.gz
+# cd $CMAKE_VERSION
+# ./configure --prefix=/usr/local/$CMAKE_VERSION
+# make
+# make install
+# PATH=/usr/local/$CMAKE_VERSION/bin:$PATH
+# cd ..
+# rm -r $CMAKE_VERSION $CMAKE_VERSION.tar.gz
 
 
 function lex_pyver {
@@ -59,3 +59,8 @@ done
 # Gaia's waf build script requires qt4 tools (qmake, uic, ...),
 # but they aren't really used. We should get rid of them in the future.
 yum -y install qt4-devel
+
+# Temporal solution. Ideally only header files for the boost multi_array classes have to be included. 
+# However, right now the numpy-boost code is used. This dependency could be removed  by using the same
+# python parsed used for other clasess as 1 or 2D vectors.
+yum -y install boost-devel
