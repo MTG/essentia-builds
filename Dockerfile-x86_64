@@ -1,4 +1,4 @@
-FROM quay.io/pypa/manylinux1_x86_64:latest
+FROM clarisys/manylinux2:x86_64
 
 COPY build_scripts/build_tools.sh build_scripts/build_3rdparty_static.sh ./
 
@@ -9,8 +9,7 @@ ENV PATH /opt/python/cp27-cp27mu/bin/:${PATH}
 
 ENV PREFIX /usr/local
 ENV PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig
-ENV ESSENTIA_3RDPARTY_VERSION v2.1_beta4-341-g1823654
-
+ENV ESSENTIA_3RDPARTY_VERSION 95cd9a576f0f1ab526165fbb553d73fbe51ce440
 RUN /build_3rdparty_static.sh && rm -r /build_3rdparty_static.sh
 
 CMD ["/bin/bash"]
