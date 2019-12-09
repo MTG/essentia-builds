@@ -4,6 +4,7 @@ YASM_VERSION=yasm-1.3.0
 CMAKE_VERSION=cmake-2.8.12
 
 # yasm on CentOS 5 is too old, install a newer version
+# manylinux2014(CentOS 7) has yasm-1.2.0 by default. Is it enough?
 curl -SLO http://www.tortall.net/projects/yasm/releases/$YASM_VERSION.tar.gz
 tar -xvf $YASM_VERSION.tar.gz
 cd $YASM_VERSION
@@ -15,6 +16,9 @@ rm -r $YASM_VERSION $YASM_VERSION.tar.gz
 
 # cmake is also too old
 # taglib requires CMake 2.8.0, chromaprint requires CMake 2.8.12
+# in manylinux2014(CentOS 7) yum installs CMake 2.8.12.2 by default
+# we could use that instead of compiling when the manylinux1 support is
+# dropped
 curl -SLO http://www.cmake.org/files/v2.8/$CMAKE_VERSION.tar.gz
 tar -xvf $CMAKE_VERSION.tar.gz
 cd $CMAKE_VERSION
