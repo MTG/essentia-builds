@@ -1,15 +1,15 @@
-FROM quay.io/pypa/manylinux1_i686:latest
+FROM quay.io/pypa/manylinux2014_x86_64:latest
 
 COPY build_scripts/build_tools.sh build_scripts/build_3rdparty_static.sh ./
 
 RUN /build_tools.sh && rm -r /build_tools.sh
 
-ENV PATH /usr/lib/qt4/bin:/usr/local/cmake-2.8.12/bin:${PATH}
+ENV PATH /usr/lib64/qt4/bin:/usr/local/cmake-2.8.12/bin:${PATH}
 ENV PATH /opt/python/cp27-cp27mu/bin/:${PATH}
 
 ENV PREFIX /usr/local
 ENV PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig
-ENV ESSENTIA_3RDPARTY_VERSION v2.1_beta4-447-gc5ea273
+ENV ESSENTIA_3RDPARTY_VERSION v2.1_beta5-46-g896a402f
 
 RUN /build_3rdparty_static.sh && rm -r /build_3rdparty_static.sh
 
