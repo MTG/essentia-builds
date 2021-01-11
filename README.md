@@ -1,6 +1,6 @@
 # Docker images for portable builds of Essentia
 
-Docker images for building portable ``manylinux1`` python wheels and executables for Essentia. 
+Docker images for building portable [``manylinux1``](https://www.python.org/dev/peps/pep-0513/) and [``manylinux2014``](https://www.python.org/dev/peps/pep-0599/) python wheels and executables for Essentia. 
 
 https://hub.docker.com/r/mtgupf/essentia-builds/
 
