@@ -5,11 +5,11 @@ COPY build_scripts/build_tools.sh build_scripts/build_3rdparty_static.sh ./
 RUN /build_tools.sh && rm -r /build_tools.sh
 
 ENV PATH /usr/lib64/qt4/bin:/usr/local/cmake-2.8.12/bin:${PATH}
-ENV PATH /opt/python/cp27-cp27mu/bin/:${PATH}
+ENV PATH /opt/python/cp38-cp38/bin/:${PATH}
 
 ENV PREFIX /usr/local
 ENV PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig
-ENV ESSENTIA_3RDPARTY_VERSION v2.1_beta5-365-g867aac7f
+ENV ESSENTIA_3RDPARTY_VERSION v2.1_beta5-368-gaecf3d2f
 
 RUN /build_3rdparty_static.sh && rm -r /build_3rdparty_static.sh
 
