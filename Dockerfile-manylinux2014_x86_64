@@ -13,5 +13,6 @@ ENV ESSENTIA_3RDPARTY_VERSION v2.1_beta5-368-gaecf3d2f
 ENV WITH_TENSORFLOW=true
 
 RUN /build_3rdparty_static.sh && rm -r /build_3rdparty_static.sh
+RUN /install_cuda.sh && rm -r /install_cuda.sh
 
 CMD ["/bin/bash"]
