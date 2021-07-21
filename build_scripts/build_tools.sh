@@ -1,6 +1,6 @@
 set -e -x
 
-YASM_VERSION=yasm-1.3.0 
+YASM_VERSION=yasm-1.3.0
 CMAKE_VERSION=cmake-2.8.12
 
 # yasm on CentOS 5 is too old, install a newer version
@@ -63,3 +63,17 @@ done
 # Gaia's waf build script requires qt4 tools (qmake, uic, ...),
 # but they aren't really used. We should get rid of them in the future.
 yum -y install qt4-devel
+
+if [ ${WITH_TENSORFLOW} = true ] ; then
+    # Bazelisk is a wrapper for Bazel that downloads the correct version for
+    # each project. This way we will not need to update the tools for future
+    # updated versions of TensorFlow.
+    curl -sL https://rpm.nodesource.com/setup_14.x | bash -
+    yum install -y nodejs
+    npm install -g @bazel/bazelisk
+
+    # The only known alternative to the interactive TensorFlow configuration is
+    # through env variables:
+    # https://github.com/tensorflow/tensorflow/issues/8527#issuecomment-289272898
+    export PYTHON_BIN_PATH=/opt/python/cp36-cp36m/bin/python3
+fi
