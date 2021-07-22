@@ -71,9 +71,4 @@ if [[ ${WITH_TENSORFLOW} ]] ; then
     curl -sL https://rpm.nodesource.com/setup_14.x | bash -
     yum install -y nodejs
     npm install -g @bazel/bazelisk
-
-    # The only known alternative to the interactive TensorFlow configuration is
-    # through env variables:
-    # https://github.com/tensorflow/tensorflow/issues/8527#issuecomment-289272898
-    export PYTHON_BIN_PATH=/opt/python/cp36-cp36m/bin/python3
 fi
