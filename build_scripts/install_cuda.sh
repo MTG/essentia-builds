@@ -1,7 +1,6 @@
 set -e -x
 
 # Install CUDA and CuDNN so that TensorFlow can be built with GPU support.
-
 CUDA_VERSION=11.2.2-1
 CUDNN_VERSION=8.1.0.77-1
 
