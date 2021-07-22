@@ -64,7 +64,7 @@ done
 # but they aren't really used. We should get rid of them in the future.
 yum -y install qt4-devel
 
-if [ ${WITH_TENSORFLOW} = true ] ; then
+if [[ ${WITH_TENSORFLOW} ]] ; then
     # Bazelisk is a wrapper for Bazel that downloads the correct version for
     # each project. This way we will not need to update the tools for future
     # updated versions of TensorFlow.
