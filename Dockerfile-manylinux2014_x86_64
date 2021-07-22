@@ -1,6 +1,6 @@
 FROM quay.io/pypa/manylinux2014_x86_64:latest
 
-COPY build_scripts/build_tools.sh build_scripts/build_3rdparty_static.sh ./
+COPY build_scripts/build_tools.sh build_scripts/build_3rdparty_static.sh build_scripts/install_cuda.sh ./
 
 RUN /build_tools.sh && rm -r /build_tools.sh
 
