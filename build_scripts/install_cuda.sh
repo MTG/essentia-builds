@@ -23,5 +23,3 @@ cp -P /usr/lib64/libcudnn* /usr/local/cuda/lib64/
 rm cuda-repo-rhel7-${CUDA_REPO_VERSION}.x86_64.rpm
 rm libcudnn8-${CUDNN_VERSION}.cuda${CUDA_VERSION::4}.x86_64.rpm
 rm libcudnn8-devel-${CUDNN_VERSION}.cuda${CUDA_VERSION::4}.x86_64.rpm
-rm -rf /usr/include/cudnn*
-rm -rf /usr/lib64/libcudnn*
