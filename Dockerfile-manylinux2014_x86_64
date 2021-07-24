@@ -50,4 +50,6 @@ ENV TF_CUDA_COMPUTE_CAPABILITIES=3.5,5.2,7.5,8.6
 
 RUN /build_3rdparty_static.sh && rm -r /build_3rdparty_static.sh
 
+RUN /uninstall_cuda.sh && rm -r /uninstall_cuda.sh
+
 CMD ["/bin/bash"]
