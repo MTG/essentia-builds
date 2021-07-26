@@ -1,11 +1,10 @@
 FROM quay.io/pypa/manylinux2014_x86_64:latest
 
-COPY build_scripts/build_tools.sh build_scripts/build_3rdparty_static.sh build_scripts/install_cuda.sh ./
+COPY build_scripts/build_tools.sh build_scripts/build_3rdparty_static.sh build_scripts/install_cuda.sh build_scripts/uninstall_cuda.sh ./
 
 ENV WITH_TENSORFLOW=true
 
 RUN /build_tools.sh && rm -r /build_tools.sh
-RUN /install_cuda.sh && rm -r /install_cuda.sh
 
 ENV PATH /usr/lib64/qt4/bin:/usr/local/cmake-2.8.12/bin:${PATH}
 ENV PATH /opt/python/cp38-cp38/bin/:${PATH}
@@ -48,8 +47,7 @@ ENV CUDNN_INSTALL_PATH=/usr/local/cuda
 # 8.6: Geforce RTX 30XX
 ENV TF_CUDA_COMPUTE_CAPABILITIES=3.5,5.2,7.5,8.6
 
-RUN /build_3rdparty_static.sh && rm -r /build_3rdparty_static.sh
-
-RUN /uninstall_cuda.sh && rm -r /uninstall_cuda.sh
+RUN /install_cuda.sh && /build_3rdparty_static.sh && /uninstall_cuda.sh \
+    && rm -r /install_cuda.sh /build_3rdparty_static.sh /uninstall_cuda.sh
 
 CMD ["/bin/bash"]
