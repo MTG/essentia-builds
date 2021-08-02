@@ -2,7 +2,10 @@ FROM quay.io/pypa/manylinux2014_x86_64:latest
 
 COPY build_scripts/build_tools.sh build_scripts/build_3rdparty_static.sh build_scripts/install_cuda.sh build_scripts/uninstall_cuda.sh ./
 
+# The manylinux2014 image is intended to build essentia-tensorflow wheels
+# To build TensorFlow we additionally need Bazel and NumPy.
 ENV WITH_TENSORFLOW=true
+ENV PYTHON_BIN_PATH=/opt/python/cp36-cp36m/bin/python3
 
 RUN /build_tools.sh && rm -r /build_tools.sh
 
@@ -16,7 +19,6 @@ ENV ESSENTIA_3RDPARTY_VERSION v2.1_beta5-368-gaecf3d2f
 # The only known alternative to the interactive TensorFlow configuration is
 # via environment variables:
 # https://github.com/tensorflow/tensorflow/issues/8527#issuecomment-289272898
-ENV PYTHON_BIN_PATH=/opt/python/cp36-cp36m/bin/python3
 ENV USE_DEFAULT_PYTHON_LIB_PATH=1
 
 ENV BAZEL_LINKLIBS=-l%:libstdc++.a

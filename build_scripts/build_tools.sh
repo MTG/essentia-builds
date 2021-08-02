@@ -71,4 +71,7 @@ if [[ ${WITH_TENSORFLOW} ]] ; then
     curl -sL https://rpm.nodesource.com/setup_14.x | bash -
     yum install -y nodejs
     npm install -g @bazel/bazelisk
+
+    # NumPy is required by Bazel
+    ${PYTHON_BIN_PATH} -m pip install numpy
 fi
