@@ -9,7 +9,7 @@ ENV PATH /opt/python/cp38-cp38/bin/:${PATH}
 
 ENV PREFIX /usr/local
 ENV PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig
-ENV ESSENTIA_3RDPARTY_VERSION v2.1_beta5-368-gaecf3d2f
+ENV ESSENTIA_3RDPARTY_VERSION v2.1_beta5-572-g6b40b902
 
 RUN /build_3rdparty_static.sh && rm -r /build_3rdparty_static.sh
 
