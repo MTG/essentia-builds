@@ -5,4 +5,4 @@ Docker images for building portable [``manylinux1``](https://www.python.org/dev/
 https://hub.docker.com/r/mtgupf/essentia-builds/
 
 CentOS 5.11 Manylinux1 images is the recommended way to build python wheels on Linux with maximum portability across systems 
-(see [PEP 513](https://www.python.org/dev/peps/pep-0513/)). The images provided in this repository are based on the [manylinux1 images](https://github.com/pypa/manylinux) and include all pre-requisites and dependencies for building Essentia.
+(see [PEP 513](https://www.python.org/dev/peps/pep-0513/)). The images provided in this repository are based on the [official manylinux1 and manylinux2014 images](https://github.com/pypa/manylinux) and include all pre-requisites and dependencies for building Essentia.
