@@ -39,7 +39,7 @@ function lex_pyver {
 }
 
 
-for PYBIN in /opt/python/*/bin; do
+for PYBIN in /opt/python/cp*/bin; do
 
 # Patch python-config scripts (https://github.com/pypa/manylinux/pull/87)
 # Remove -lpython from the python-config script.
