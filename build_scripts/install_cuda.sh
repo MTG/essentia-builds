@@ -1,22 +1,64 @@
-set -e -x
+#!/bin/bash
+set -euox pipefail
 
-# Install CUDA and CuDNN so that TensorFlow can be built with GPU support.
-CUDA_VERSION=11.2.2-1
-CUDNN_VERSION=8.1.0.77-1
+CUDA_VERSION=12.2
+CUDNN_VERSION=8.9.5.29-1
 
-# First download the latest Nvidia CUDA from official repository and install CUDA
-yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo
-yum install -y cuda-${CUDA_VERSION}
+check_rpm() {
+  local file="$1"
+  if ! file "$file" | grep -q "RPM"; then
+    echo "❌ Download failed: $file is not a valid RPM package"
+    exit 1
+  fi
+}
 
-# Install CuDNN and put it in the CUDA path
-curl -SLO https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/libcudnn8-${CUDNN_VERSION}.cuda${CUDA_VERSION::4}.x86_64.rpm
-curl -SLO https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/libcudnn8-devel-${CUDNN_VERSION}.cuda${CUDA_VERSION::4}.x86_64.rpm
-rpm -i libcudnn8-${CUDNN_VERSION}.cuda${CUDA_VERSION::4}.x86_64.rpm
-rpm -i libcudnn8-devel-${CUDNN_VERSION}.cuda${CUDA_VERSION::4}.x86_64.rpm
+# ----------------------------
+# Add NVIDIA CUDA repo
+# ----------------------------
+curl -sSLO https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo
+mv cuda-rhel8.repo /etc/yum.repos.d/cuda.repo
+yum clean all
+yum makecache
 
-cp -P /usr/include/cudnn* /usr/local/cuda/include
-cp -P /usr/lib64/libcudnn* /usr/local/cuda/lib64/
+# ----------------------------
+# Install minimal CUDA toolkit
+# ----------------------------
+yum -y install cuda-toolkit-12-2
 
-# Clean Up
-rm libcudnn8-${CUDNN_VERSION}.cuda${CUDA_VERSION::4}.x86_64.rpm
-rm libcudnn8-devel-${CUDNN_VERSION}.cuda${CUDA_VERSION::4}.x86_64.rpm
+# ----------------------------
+# Download cuDNN runtime and dev packages
+# ----------------------------
+CUDNN_RPM="libcudnn8-${CUDNN_VERSION}.cuda${CUDA_VERSION}.x86_64.rpm"
+CUDNN_DEV_RPM="libcudnn8-devel-${CUDNN_VERSION}.cuda${CUDA_VERSION}.x86_64.rpm"
+
+curl -sSLO "https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/${CUDNN_RPM}"
+curl -sSLO "https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/${CUDNN_DEV_RPM}"
+
+# Check downloads
+check_rpm "$CUDNN_RPM"
+check_rpm "$CUDNN_DEV_RPM"
+
+# ----------------------------
+# Install cuDNN
+# ----------------------------
+yum -y localinstall "$CUDNN_RPM" "$CUDNN_DEV_RPM"
+
+# ----------------------------
+# Environment setup
+# ----------------------------
+export CUDA_HOME=/usr/local/cuda
+export PATH=$CUDA_HOME/bin:$PATH
+export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+
+# ----------------------------
+# Verify installation
+# ----------------------------
+nvcc --version || echo "⚠️ nvcc not found (maybe install cuda-nvcc package)"
+ldconfig -p | grep cudnn || echo "⚠️ cuDNN not found in linker cache"
+
+# ----------------------------
+# Clean yum cache again to save space
+# ----------------------------
+yum clean all
+rm -rf /var/cache/yum /tmp/*
+
