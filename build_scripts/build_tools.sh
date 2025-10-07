@@ -1,10 +1,10 @@
 set -e -x
 
 YASM_VERSION=yasm-1.3.0
-CMAKE_VERSION=cmake-2.8.12
+CMAKE_VERSION=cmake-3.28.6
 
 # yasm on CentOS 5 is too old, install a newer version
-# manylinux2014(CentOS 7) has yasm-1.2.0 by default. Is it enough?
+# manylinux_2_280(CentOS 7) has yasm-1.3.0 by default. Maybe not need to reinstall?
 curl -SLO http://www.tortall.net/projects/yasm/releases/$YASM_VERSION.tar.gz
 tar -xvf $YASM_VERSION.tar.gz
 cd $YASM_VERSION
@@ -15,19 +15,19 @@ cd ..
 rm -r $YASM_VERSION $YASM_VERSION.tar.gz
 
 # cmake is also too old
-# taglib requires CMake 2.8.0, chromaprint requires CMake 2.8.12
-# in manylinux2014(CentOS 7) yum installs CMake 2.8.12.2 by default
-# we could use that instead of compiling when the manylinux1 support is
-# dropped
-curl -SLO http://www.cmake.org/files/v2.8/$CMAKE_VERSION.tar.gz
-tar -xvf $CMAKE_VERSION.tar.gz
+# onnxruntime requires CMake 3.28.0, that's why chromaprint and taglib has been upgraded to 1.5.1 and 1.13.1
+# in manylinux_2_28(CentOS 8) yum installs CMake 4 by default
+curl -SLO https://www.cmake.org/files/v3.28/$CMAKE_VERSION.tar.gz
+
+tar -xzf $CMAKE_VERSION.tar.gz
 cd $CMAKE_VERSION
-./configure --prefix=/usr/local/$CMAKE_VERSION
-make
+
+./bootstrap --prefix=/usr/local
+make -j$(nproc)
 make install
-PATH=/usr/local/$CMAKE_VERSION/bin:$PATH
+
 cd ..
-rm -r $CMAKE_VERSION $CMAKE_VERSION.tar.gz
+rm -rf $CMAKE_VERSION $CMAKE_VERSION.tar.gz
 
 
 function lex_pyver {
@@ -62,7 +62,11 @@ done
 
 # Gaia's waf build script requires qt4 tools (qmake, uic, ...),
 # but they aren't really used. We should get rid of them in the future.
-yum -y install qt4-devel
+
+# There is no qt4-devel package in quay.io/pypa/manylinux_2_28_x86_64, is based on AlmaLinux 8
+# but it could be updated to qt5
+yum -y install qt5-qtbase-devel
+youm clean all && rm -rf /var/cache/yum
 
 if [[ ${WITH_TENSORFLOW} ]] ; then
     # Bazelisk is a wrapper for Bazel that downloads the correct version for
