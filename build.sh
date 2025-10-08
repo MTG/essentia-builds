@@ -2,7 +2,5 @@
 set -ex
 
 for MANYLINUX in "2014"; do
-    for PLATFORM in "i686" "x86_64"; do
-        docker build --rm -t mtgupf/essentia-builds:manylinux${MANYLINUX}_$PLATFORM -f Dockerfile-manylinux${MANYLINUX}_$PLATFORM .
-    done
+  docker build --rm -t mtgupf/essentia-builds:manylinux${MANYLINUX}_x86_64 -f Dockerfile-manylinux${MANYLINUX}_x86_64 .
 done
