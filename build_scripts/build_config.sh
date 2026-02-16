@@ -17,7 +17,7 @@ SHARED_OR_STATIC="
 "
 
 EIGEN_VERSION=3.3.7
-FFMPEG_VERSION=ffmpeg-2.8.12
+FFMPEG_VERSION=ffmpeg-7.1.1
 LAME_VERSION=3.100
 TAGLIB_VERSION=taglib-1.13.1
 ZLIB_VERSION=zlib-1.2.12
@@ -34,10 +34,9 @@ FFMPEG_AUDIO_FLAGS="
     --disable-programs
     --disable-doc
     --disable-debug
-    --disable-inline-asm
 
     --disable-avdevice
-    --disable-avresample
+    --disable-swresample
     --disable-swscale
     --disable-postproc
     --disable-avfilter
@@ -59,7 +58,7 @@ FFMPEG_AUDIO_FLAGS="
     --enable-protocol=file
     --enable-protocol=pipe
 
-    --disable-sdl
+    --disable-sdl2
     --disable-lzma
     --disable-zlib
     --disable-xlib
@@ -179,7 +178,6 @@ FFMPEG_AUDIO_FLAGS="
     --enable-decoder=pcm_u24le
     --enable-decoder=pcm_u32be
     --enable-decoder=pcm_u32le
-    --enable-decoder=pcm_zork
 
     --enable-parser=aac
     --enable-parser=aac_latm
@@ -317,4 +315,3 @@ export CUDNN_INSTALL_PATH="${CUDNN_INSTALL_PATH:-/usr/local/cuda}"
 # 7.5: Geforce RTX 2080 (Ti)
 # 8.6: Geforce RTX 30XX
 export TF_CUDA_COMPUTE_CAPABILITIES="${TF_CUDA_COMPUTE_CAPABILITIES:-3.5,5.2,7.5,8.6}"
-
