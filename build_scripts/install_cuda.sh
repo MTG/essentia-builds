@@ -4,44 +4,25 @@ set -euox pipefail
 CUDA_VERSION=12.2
 CUDNN_VERSION=8.9.5.29-1
 
-check_rpm() {
-  local file="$1"
-  if ! file "$file" | grep -q "RPM"; then
-    echo "❌ Download failed: $file is not a valid RPM package"
-    exit 1
-  fi
-}
-
 # ----------------------------
 # Add NVIDIA CUDA repo
 # ----------------------------
-curl -sSLO https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo
-mv cuda-rhel8.repo /etc/yum.repos.d/cuda.repo
+curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo -o /etc/yum.repos.d/cuda.repo
 yum clean all
 yum makecache
 
 # ----------------------------
-# Install minimal CUDA toolkit
+# Install minimal CUDA toolkit and cuDNN
 # ----------------------------
-yum -y install cuda-toolkit-12-2
-
-# ----------------------------
-# Download cuDNN runtime and dev packages
-# ----------------------------
-CUDNN_RPM="libcudnn8-${CUDNN_VERSION}.cuda${CUDA_VERSION}.x86_64.rpm"
-CUDNN_DEV_RPM="libcudnn8-devel-${CUDNN_VERSION}.cuda${CUDA_VERSION}.x86_64.rpm"
-
-curl -sSLO "https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/${CUDNN_RPM}"
-curl -sSLO "https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/${CUDNN_DEV_RPM}"
-
-# Check downloads
-check_rpm "$CUDNN_RPM"
-check_rpm "$CUDNN_DEV_RPM"
-
-# ----------------------------
-# Install cuDNN
-# ----------------------------
-yum -y localinstall "$CUDNN_RPM" "$CUDNN_DEV_RPM"
+yum -y install \
+  cuda-nvcc-12-8 \
+  cuda-cudart-devel-12-8 \
+  cuda-libraries-devel-12-8 \
+  libcudnn8 \
+  libcudnn8-devel \
+  --exclude=cuda-drivers &&
+  yum clean all &&
+  rm -rf /var/cache/yum
 
 # ----------------------------
 # Environment setup
@@ -57,8 +38,19 @@ nvcc --version || echo "⚠️ nvcc not found (maybe install cuda-nvcc package)"
 ldconfig -p | grep cudnn || echo "⚠️ cuDNN not found in linker cache"
 
 # ----------------------------
+# Downgrade GCC - CUDA 12.8 only supports GCC ≤ 12
+# ----------------------------
+yum install -y gcc-toolset-12 &&
+  yum clean all &&
+  rm -rf /var/cache/yum
+
+source /opt/rh/gcc-toolset-12/enable
+gcc --version
+
+# ----------------------------
 # Clean yum cache again to save space
 # ----------------------------
 yum clean all
-rm -rf /var/cache/yum /tmp/*
-
+rm -rf /var/cache/yum /var/cache/dnf
+rm -rf /root/.cache /tmp/* /var/tmp/*
+rm -f *.rpm
