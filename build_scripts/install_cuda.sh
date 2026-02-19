@@ -39,6 +39,7 @@ ldconfig -p | grep cudnn || echo "⚠️ cuDNN not found in linker cache"
 
 # ----------------------------
 # Downgrade GCC - CUDA 12.8 only supports GCC ≤ 12
+# Requirement for ONNXRUNTIME using CUDA
 # ----------------------------
 yum install -y gcc-toolset-12 &&
   yum clean all &&
