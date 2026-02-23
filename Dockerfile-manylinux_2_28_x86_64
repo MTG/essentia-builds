@@ -4,7 +4,7 @@ COPY build_scripts/build_tools.sh build_scripts/build_3rdparty_static.sh build_s
 
 # The manylinux_2_28 image is intended to build essentia-tensorflow wheels
 # To build TensorFlow we additionally need Bazel and NumPy.
-ENV WITH_TENSORFLOW=false
+ENV WITH_TENSORFLOW=true
 ENV PYTHON_BIN_PATH=/opt/python/cp310-cp310/bin/python3
 
 # Install cmake3 dependencies
@@ -41,8 +41,8 @@ ENV TF_NEED_OPENCL=0
 # For future updates check the GPU compatibility chart:
 # https://www.tensorflow.org/install/source#gpu
 ENV TF_NEED_CUDA=1
-ENV TF_CUDA_VERSION=11.2
-ENV TF_CUDNN_VERSION=8.1
+ENV TF_CUDA_VERSION=12.8
+ENV TF_CUDNN_VERSION=8
 ENV CUDA_TOOLKIT_PATH=/usr/local/cuda
 ENV CUDNN_INSTALL_PATH=/usr/local/cuda
 
@@ -55,7 +55,7 @@ ENV CUDNN_INSTALL_PATH=/usr/local/cuda
 # 5.2: Geforce GTX TITAN X
 # 7.5: Geforce RTX 2080 (Ti)
 # 8.6: Geforce RTX 30XX
-ENV TF_CUDA_COMPUTE_CAPABILITIES=3.5,5.2,7.5,8.6
+ENV TF_CUDA_COMPUTE_CAPABILITIES="70,75,80,86"
 
 RUN /install_cuda.sh && /build_3rdparty_static.sh && /uninstall_cuda.sh \
   && rm -r /install_cuda.sh /build_3rdparty_static.sh /uninstall_cuda.sh
