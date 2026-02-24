@@ -5,8 +5,8 @@ curl -SLO https://github.com/MTG/essentia/archive/$ESSENTIA_3RDPARTY_VERSION.zip
 unzip $ESSENTIA_3RDPARTY_VERSION.zip
 cd essentia-*/
 
-if [[ ${WITH_TENSORFLOW} ]] ; then
-    with_tensorflow=--with-tensorflow
+if [[ "${WITH_TENSORFLOW}" == "true" ]]; then
+  with_tensorflow=--with-tensorflow
 fi
 
 # Install dependencies to /usr/local; force --static flag to pickup private libraries for Qt
