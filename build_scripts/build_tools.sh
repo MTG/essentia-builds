@@ -60,7 +60,11 @@ done
 
 # Gaia's waf build script requires qt4 tools (qmake, uic, ...),
 # but they aren't really used. We should get rid of them in the future.
-yum -y install qt4-devel
+
+# There is no qt4-devel package in quay.io/pypa/manylinux_2_28_x86_64, is based on AlmaLinux 8
+# but it could be updated to qt5
+yum -y install qt5-qtbase-devel
+yum clean all && rm -rf /var/cache/yum
 
 if [[ "${WITH_TENSORFLOW}" == "true" ]]; then
   # Bazelisk is a wrapper for Bazel that downloads the correct version for
@@ -69,6 +73,14 @@ if [[ "${WITH_TENSORFLOW}" == "true" ]]; then
   curl -sL https://rpm.nodesource.com/setup_14.x | bash -
   yum install -y nodejs
   npm install -g @bazel/bazelisk
+
+  # Bazelisk automatically downloads the latest Bazel
+  # unless explicitly tell it which version to use
+  ln -s /usr/bin/bazelisk /usr/local/bin/bazel
+  export USE_BAZEL_VERSION=6.5.0
+
+  echo 'export USE_BAZEL_VERSION=6.5.0' >>~/.bashrc
+  source ~/.bashrc
 
   # NumPy is required by Bazel
   ${PYTHON_BIN_PATH} -m pip install numpy
