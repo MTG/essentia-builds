@@ -1,22 +1,64 @@
-set -e -x
+#!/bin/bash
+set -euo pipefail
 
-# Install CUDA and CuDNN so that TensorFlow can be built with GPU support.
-CUDA_VERSION=11.2.2-1
-CUDNN_VERSION=8.1.0.77-1
+CUDA_VERSION=12-3
+CUDA_MAJOR=12.3
 
-# First download the latest Nvidia CUDA from official repository and install CUDA
-yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo
-yum install -y cuda-${CUDA_VERSION}
+# ----------------------------
+# Add NVIDIA CUDA RHEL8 repo
+# ----------------------------
+curl -fsSL \
+  https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo \
+  -o /etc/yum.repos.d/cuda.repo
 
-# Install CuDNN and put it in the CUDA path
-curl -SLO https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/libcudnn8-${CUDNN_VERSION}.cuda${CUDA_VERSION::4}.x86_64.rpm
-curl -SLO https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/libcudnn8-devel-${CUDNN_VERSION}.cuda${CUDA_VERSION::4}.x86_64.rpm
-rpm -i libcudnn8-${CUDNN_VERSION}.cuda${CUDA_VERSION::4}.x86_64.rpm
-rpm -i libcudnn8-devel-${CUDNN_VERSION}.cuda${CUDA_VERSION::4}.x86_64.rpm
+yum clean all
+yum makecache
 
-cp -P /usr/include/cudnn* /usr/local/cuda/include
-cp -P /usr/lib64/libcudnn* /usr/local/cuda/lib64/
+# ----------------------------
+# Install minimal CUDA 12.3 toolkit
+# (no drivers inside container)
+# ----------------------------
+yum -y install \
+  cuda-nvcc-${CUDA_VERSION} \
+  cuda-cudart-devel-${CUDA_VERSION} \
+  cuda-libraries-devel-${CUDA_VERSION} \
+  cuda-toolkit-${CUDA_VERSION} \
+  --exclude=cuda-drivers
 
-# Clean Up
-rm libcudnn8-${CUDNN_VERSION}.cuda${CUDA_VERSION::4}.x86_64.rpm
-rm libcudnn8-devel-${CUDNN_VERSION}.cuda${CUDA_VERSION::4}.x86_64.rpm
+# ----------------------------
+# Install cuDNN 9.x for CUDA 12.3
+# (TensorFlow 2.17 requirement)
+# ----------------------------
+yum -y install \
+  libcudnn9-cuda-12 \
+  libcudnn9-devel-cuda-12
+
+# ----------------------------
+# Cleanup yum cache
+# ----------------------------
+yum clean all
+rm -rf /var/cache/yum /var/cache/dnf
+
+# ----------------------------
+# Environment setup
+# ----------------------------
+export CUDA_HOME=/usr/local/cuda-${CUDA_MAJOR}
+export PATH=${CUDA_HOME}/bin:${PATH}
+export LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+
+# Optional: symlink for compatibility
+ln -sfn /usr/local/cuda-${CUDA_MAJOR} /usr/local/cuda
+
+# ----------------------------
+# Verify installation
+# ----------------------------
+echo "=== NVCC ==="
+nvcc --version
+
+echo "=== cuDNN ==="
+ldconfig -p | grep cudnn || echo "cuDNN not visible in linker cache"
+
+# ----------------------------
+# Final cleanup to reduce image size
+# ----------------------------
+rm -rf /root/.cache /tmp/* /var/tmp/*
