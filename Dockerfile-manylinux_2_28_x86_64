@@ -1,0 +1,78 @@
+FROM quay.io/pypa/manylinux_2_28_x86_64:latest
+
+COPY build_scripts/build_tools.sh build_scripts/build_3rdparty_static.sh build_scripts/install_cuda.sh build_scripts/uninstall_cuda.sh ./
+
+# The manylinux2014 image is intended to build essentia-tensorflow wheels
+# To build TensorFlow we additionally need Bazel and NumPy.
+ENV WITH_TENSORFLOW=true
+ENV PYTHON_BIN_PATH=/opt/python/cp310-cp310/bin/python3
+ENV PYTHONPATH=/usr/local/lib/python3.10/site-packages
+
+# Install cmake3 dependencies
+RUN yum install -y vim openssl-devel 	\
+	&& yum clean all 		\
+	&& rm -rf /var/cache/yum
+
+RUN /build_tools.sh && rm -r /build_tools.sh
+
+ENV PATH=/usr/lib64/qt4/bin:/usr/local/cmake-3.16.9/bin:${PATH}
+ENV PATH=/opt/python/cp310-cp310/bin/:${PATH}
+
+ENV PREFIX=/usr/local
+ENV PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig
+ENV LD_LIBRARY_PATH=${PREFIX}/lib:/usr/local/lib64:${LD_LIBRARY_PATH}
+ENV ESSENTIA_3RDPARTY_VERSION=v2.1_beta5-1421-g0ad01f29
+
+# The only known alternative to the interactive TensorFlow configuration is
+# via environment variables:
+# https://github.com/tensorflow/tensorflow/issues/8527#issuecomment-289272898
+ENV USE_DEFAULT_PYTHON_LIB_PATH=1
+
+ENV BAZEL_LINKLIBS=-l%:libstdc++.a
+
+ENV TF_NEED_JEMALLOC=1
+ENV TF_NEED_GCP=0
+ENV TF_NEED_HDFS=0
+ENV TF_ENABLE_XLA=0
+ENV TF_NEED_OPENCL=0
+ENV TF_CUDA_CLANG=0
+
+# TensorFlow CUDA & CuDNN versions intended for TensorFlow 2.5
+# For future updates check the GPU compatibility chart:
+# https://www.tensorflow.org/install/source#gpu
+ENV TF_NEED_CUDA=1
+ENV TF_CUDA_VERSION=12.3
+ENV TF_CUDNN_VERSION=9
+ENV CUDA_TOOLKIT_PATH=/usr/local/cuda
+ENV CUDNN_INSTALL_PATH=/usr
+
+ENV CC=/usr/bin/gcc
+ENV CXX=/usr/bin/g++
+
+# The compute capabilities define which GPUs can be used:
+# https://developer.nvidia.com/cuda-gpus#compute
+# Supporting more versions increases the library size, so
+# for the moment it is set to a conservative number that
+# covers some of the most popular deep learning GPUs:
+# 7.5: Geforce RTX 2080 (Ti)
+# 8.0: Geforce RTX 3090 - 3080 (Ti)
+# 8.6: Geforce RTX 30XX
+# 8.9: Geforce RTX 4080
+ENV TF_CUDA_COMPUTE_CAPABILITIES=7.5,8.0,8.6,8.9
+ENV TF_CUDA_PATHS=/usr/local/cuda,/usr
+ENV PATH=$CUDA_TOOLKIT_PATH/bin:$PATH
+
+# TensorFlow 2.17.0 only supports GCC 11 (GCC 14 by default)
+# CUDA 12.3 supports GCC ≤ 11 officially
+RUN yum -y install gcc-toolset-11 \
+	&& yum clean all 		\
+	&& rm -rf /var/cache/yum
+
+ENV PATH=/opt/rh/gcc-toolset-11/root/usr/bin:$PATH
+ENV LD_LIBRARY_PATH=/opt/rh/gcc-toolset-11/root/usr/lib64:$LD_LIBRARY_PATH
+
+# Install CUDA and Essentia dependencies
+RUN /install_cuda.sh && /build_3rdparty_static.sh && /uninstall_cuda.sh \
+  && rm -r /install_cuda.sh /build_3rdparty_static.sh /uninstall_cuda.sh
+
+CMD ["/bin/bash"]
