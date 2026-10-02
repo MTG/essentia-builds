@@ -21,7 +21,7 @@ ENV PATH=/opt/python/cp310-cp310/bin/:${PATH}
 ENV PREFIX=/usr/local
 ENV PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig
 ENV LD_LIBRARY_PATH=${PREFIX}/lib:/usr/local/lib64:${LD_LIBRARY_PATH}
-ENV ESSENTIA_3RDPARTY_VERSION=v2.1_beta5-1421-g0ad01f29
+ENV ESSENTIA_3RDPARTY_VERSION=v2.1_beta5-1459-g53625f67
 
 # The only known alternative to the interactive TensorFlow configuration is
 # via environment variables:
