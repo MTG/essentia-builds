@@ -62,7 +62,7 @@ ENV PATH=$CUDA_TOOLKIT_PATH/bin:$PATH
 # TensorFlow 2.17.0 only supports GCC 11 (GCC 8.5 and 14 installed by default)
 # CUDA 12.3 supports GCC ≤ 11 officially
 # ONNX Runtime support GCC >= 11.1
-# To use GCC 11.2, CC and CXX should be updated 
+# To use GCC 11.2, CC and CXX should be updated
 RUN yum -y install gcc-toolset-11 \
 	&& yum clean all 		\
 	&& rm -rf /var/cache/yum
