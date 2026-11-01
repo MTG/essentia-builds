@@ -13,8 +13,8 @@ RUN /build_tools.sh && rm -r /build_tools.sh
 ENV PATH=/usr/lib64/qt5/bin:/opt/python/cp310-cp310/bin/:${PATH}
 
 ENV PREFIX=/usr/local
-ENV PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig
-ENV LD_LIBRARY_PATH=${PREFIX}/lib:/usr/local/lib64:${LD_LIBRARY_PATH}
+ENV PKG_CONFIG_PATH=${PREFIX}/lib64/pkgconfig:${PREFIX}/lib/pkgconfig
+ENV LD_LIBRARY_PATH=${PREFIX}/lib:{PREFIX}/lib64:${LD_LIBRARY_PATH}
 ENV ESSENTIA_3RDPARTY_VERSION=v2.1_beta5-1555-g33108c70
 
 # To build ONNX Runtime with CUDA Execution provider
